@@ -6,6 +6,7 @@ use strict;
 use Razor2::Syslog;
 use Time::HiRes qw(gettimeofday);
 use POSIX qw(strftime);
+use Encode ();
 use IO::File;
 
 # 2003/09/10 Anne Bennett: syslog of our choice (uses socket,
@@ -123,7 +124,7 @@ sub log {
         my $logstr = sprintf( "%s[%d]: [%2d] %s\n", $self->{LogPrefix}, $$, $prio, $message );
         $logstr =~ s/\n+\n$/\n/;
         my $fd = $self->{fd};
-        print $fd "$now_string$logstr";
+        print $fd Encode::encode_utf8("$now_string$logstr");
 
     }
 
@@ -143,7 +144,7 @@ sub log2file {
     my $fn  = "$self->{Log2FileDir}/razor.$$.$fn_ext";
 
     if ( open OUT, ">$fn" ) {
-        print OUT $$textref;
+        print OUT Encode::encode_utf8($$textref);
         close OUT;
         $self->log( $prio, "log2file: wrote message len=$len to file: $fn" );
     }
