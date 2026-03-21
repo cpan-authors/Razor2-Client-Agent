@@ -4,6 +4,24 @@
 
 Changes - razor-agents
 
+=head2 2.86 (June 03, 2019)
+
+=over 4
+
+=item *
+
+Switch to IO::Socket::IP to enable IPv6 support.
+
+=item *
+
+Switch to modern XSLoader.
+
+=item *
+
+Modernize CI configuration and track perl 5.30.
+
+=back
+
 =head2 2.85 (July 21, 2008)
 
 =over 4
