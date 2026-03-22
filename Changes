@@ -1,3 +1,25 @@
+2.87 2026-03-22
+
+  Bug Fixes:
+  - Fix "Wide character in print" warnings by encoding UTF-8 output
+    in Logger. (GH #8, PR #17)
+  - Enable autoflush on stdout/stderr logger to prevent encoding
+    layer buffering. (GH #20, PR #21)
+  - Resolve Windows CI test failures in t/basic.t. (GH #22, PR #23)
+  - Fix builds with parallel make at manifypods-razor. (PR #10)
+
+  Improvements:
+  - Allow logfile config to use 'stdout' and 'stderr' keywords for
+    direct output. (GH #14, PR #15)
+  - Use Digest::SHA instead of Digest::SHA1, removing the non-core
+    Digest::SHA1 dependency. (PR #11)
+
+  Maintenance:
+  - Replace Travis CI with GitHub Actions and set MIN_PERL_VERSION
+    to 5.010. (PR #19)
+  - Rewrite Changes file from POD to plain text format. (PR #18)
+  - Stop tracking META files in git.
+
 2.86 Jun 03 2019
 
 - Switch to IO::Socket::IP to enable IPv6 support.

@@ -6,7 +6,6 @@ bin/razor-report
 bin/razor-revoke
 BUGS
 Changes
-cpanfile
 CREDITS
 deHTMLxs.h
 deHTMLxs.xs
