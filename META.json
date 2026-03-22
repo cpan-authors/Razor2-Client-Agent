@@ -34,7 +34,7 @@
       "runtime" : {
          "requires" : {
             "IO::Socket::IP" : "0",
-            "Digest::SHA1" : "0",
+            "Digest::SHA" : "0",
             "File::Copy" : "0",
             "File::Spec" : "0",
             "Getopt::Long" : "0",

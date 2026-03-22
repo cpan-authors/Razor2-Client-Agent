@@ -23,7 +23,7 @@ WriteMakefile(
     EXE_FILES => [qw( bin/razor-client bin/razor-admin bin/razor-check bin/razor-report bin/razor-revoke )],
     PREREQ_PM => {
         'IO::Socket::IP' => 0,
-        'Digest::SHA1'   => 0,
+        'Digest::SHA'    => 0,
         'File::Copy'     => 0,
         'File::Spec'     => 0,
         'Getopt::Long'   => 0,

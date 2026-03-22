@@ -26,7 +26,7 @@ option, like so:
 
             IO::Socket::IP
             Time::HiRes
-            Digest::SHA1
+            Digest::SHA
             MIME::Base64
             Test::Simple
             Test::Harness
