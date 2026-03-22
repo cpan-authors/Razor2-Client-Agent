@@ -132,7 +132,8 @@ MAKE_FRAG
 # begin razor-agents
 %s
 
-manifypods-razor : docs/razor-agent.conf.pod \
+manifypods-razor : config \
+	docs/razor-agent.conf.pod \
 	docs/razor-agents.pod                \
 	docs/razor-whitelist.pod
 	$(POD2MAN) \
