@@ -66,16 +66,19 @@ sub new {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDOUT{IO};
         $self->_ensure_utf8( $self->{fd} );
+        $self->{fd}->autoflush(1);
     }
     elsif ( $self->{LogTo} eq 'stderr' ) {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDERR{IO};
         $self->_ensure_utf8( $self->{fd} );
+        $self->{fd}->autoflush(1);
     }
     else {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDERR{IO};
         $self->_ensure_utf8( $self->{fd} );
+        $self->{fd}->autoflush(1);
     }
 
     $self->{LogTimeFormat} ||= "%b %d %H:%M:%S";    # formatting from strftime()
