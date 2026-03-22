@@ -6,7 +6,6 @@ use strict;
 use Razor2::Syslog;
 use Time::HiRes qw(gettimeofday);
 use POSIX qw(strftime);
-use Encode ();
 use IO::File;
 
 # 2003/09/10 Anne Bennett: syslog of our choice (uses socket,
@@ -44,6 +43,7 @@ sub new {
                 die $!;
             }
         };
+        binmode( LOGF, ':encoding(UTF-8)' );
         LOGF->autoflush(1);
         $self->{fd} = *LOGF{IO};
     }
@@ -65,14 +65,17 @@ sub new {
     elsif ( $self->{LogTo} eq 'stdout' ) {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDOUT{IO};
+        $self->_ensure_utf8( $self->{fd} );
     }
     elsif ( $self->{LogTo} eq 'stderr' ) {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDERR{IO};
+        $self->_ensure_utf8( $self->{fd} );
     }
     else {
         $self->{LogType} = 'file';
         $self->{fd}      = *STDERR{IO};
+        $self->_ensure_utf8( $self->{fd} );
     }
 
     $self->{LogTimeFormat} ||= "%b %d %H:%M:%S";    # formatting from strftime()
@@ -124,7 +127,7 @@ sub log {
         my $logstr = sprintf( "%s[%d]: [%2d] %s\n", $self->{LogPrefix}, $$, $prio, $message );
         $logstr =~ s/\n+\n$/\n/;
         my $fd = $self->{fd};
-        print $fd Encode::encode_utf8("$now_string$logstr");
+        print $fd "$now_string$logstr";
 
     }
 
@@ -143,13 +146,21 @@ sub log2file {
     my $len = length($$textref);
     my $fn  = "$self->{Log2FileDir}/razor.$$.$fn_ext";
 
-    if ( open OUT, ">$fn" ) {
-        print OUT Encode::encode_utf8($$textref);
+    if ( open OUT, '>:encoding(UTF-8)', $fn ) {
+        print OUT $$textref;
         close OUT;
         $self->log( $prio, "log2file: wrote message len=$len to file: $fn" );
     }
     else {
         $self->log( $prio, "log2file: could not write to $fn: $!" );
+    }
+}
+
+sub _ensure_utf8 {
+    my ( $self, $fh ) = @_;
+    my @layers = PerlIO::get_layers($fh);
+    unless ( grep { $_ eq 'utf8' || $_ eq 'encoding' } @layers ) {
+        binmode( $fh, ':encoding(UTF-8)' );
     }
 }
 

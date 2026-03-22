@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 use File::Temp qw(tempfile tempdir);
 
 use Razor2::Logger;
@@ -86,4 +86,24 @@ use Razor2::Logger;
     $logger->log2file( 1, \$text, 'test.txt' );
 
     is( scalar @warnings, 0, 'no "Wide character" warnings in log2file' );
+}
+
+# Test 6: Logging wide characters to stdout does not produce warnings
+{
+    my $output = '';
+    local *STDOUT;
+    open STDOUT, '>:raw', \$output or die "Cannot redirect STDOUT: $!";
+
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, @_ };
+
+    my $logger = Razor2::Logger->new(
+        LogTo         => 'stdout',
+        LogDebugLevel => 5,
+        LogPrefix     => 'test',
+    );
+    $logger->log( 1, "UTF-8 to stdout: \x{e9}\x{2603}" );
+
+    is( scalar @warnings, 0, 'no "Wide character" warnings logging UTF-8 to stdout' );
+    like( $output, qr/UTF-8 to stdout/, 'UTF-8 message appears in stdout output' );
 }
