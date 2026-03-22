@@ -92,7 +92,7 @@ use Razor2::Logger;
 {
     my $output = '';
     local *STDOUT;
-    open STDOUT, '>:raw', \$output or die "Cannot redirect STDOUT: $!";
+    open STDOUT, '>', \$output or die "Cannot redirect STDOUT: $!";
 
     my @warnings;
     local $SIG{__WARN__} = sub { push @warnings, @_ };
