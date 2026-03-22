@@ -19,6 +19,7 @@ WriteMakefile(
     AUTHOR       => 'Vipul Ved Prakash <mail@vipul.net>',
     ABSTRACT     => 'Collaborative, content-based spam filtering network agent.',
     VERSION_FROM => 'lib/Razor2/Client/Version.pm',
+    MIN_PERL_VERSION => '5.010',
     ( $ExtUtils::MakeMaker::VERSION >= 6.3002 ? ( 'LICENSE' => 'perl', ) : () ),
     EXE_FILES => [qw( bin/razor-client bin/razor-admin bin/razor-check bin/razor-report bin/razor-revoke )],
     PREREQ_PM => {
