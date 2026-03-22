@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 9;
 use File::Temp qw(tempfile tempdir);
 
 use Razor2::Logger;
