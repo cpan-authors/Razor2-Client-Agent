@@ -401,7 +401,8 @@ sub save_ident {
 sub my_readlink {
     my ( $self, $fn ) = @_;
 
-    while (1) {
+    my $max_depth = 20;
+    while ( $max_depth-- > 0 ) {
         return $fn unless -l $fn;
 
         if ( $fn =~ /^(.*)\/([^\/]+)$/ ) {
@@ -415,6 +416,8 @@ sub my_readlink {
             $fn = $1 if $fn =~ /^(\S+)$/;           # untaint readlink
         }
     }
+    $self->log( 1, "my_readlink: too many symlink levels for $fn" );
+    return $fn;
 }
 
 sub parse_value {
@@ -461,15 +464,15 @@ sub read_file {
 
     my $total = 0;
     my @lines;
-    unless ( open CONF, "<$fn" ) {
+    open( my $conf_fh, '<', $fn ) or do {
         $self->log( 5, "Can't read file $fn: $!" );
         return;
-    }
+    };
 
     # set $/ to the default in case someone has overwritten $/ elsewhere
     local $/ = "\n";
 
-    for (<CONF>) {
+    for (<$conf_fh>) {
         chomp;
         next if /^\s*#/;
         if ($nothash) {
@@ -485,7 +488,7 @@ sub read_file {
         }
         $total++;
     }
-    close CONF;
+    close $conf_fh;
     $self->log( 5, "read_file: $total items read from $fn" );
 
     return $nothash ? \@lines : $conf;
@@ -502,7 +505,7 @@ sub write_file {
     my ( $self, $fn, $hash, $append, $header, $lock ) = @_;
 
     $fn = "$self->{razorhome}/$fn" unless ( $fn =~ /^\// );
-    $fn = ">$fn" if $append;
+    my $open_mode = $append ? '>>' : '>';
 
     if ( $^O eq 'VMS' && $fn !~ /\[/ ) {
         my ( $dir, $file, $ext ) = ( $fn =~ /(^.*\/)(.*)(\..*)$/ );
@@ -521,26 +524,25 @@ sub write_file {
             return $self->error("File is locked, try again later: $lockfile");
         }
         else {
-            unless ( open LOCK, ">$fn.lock" ) {
+            open( my $lock_fh, '>', "$fn.lock" ) or do {
                 return $self->error("Can't create lock file $fn.lock: $!");
-            }
-            close LOCK;
+            };
         }
     }
-    unless ( open CONF, ">$fn" ) {
+    open( my $conf_fh, $open_mode, $fn ) or do {
         return $self->error("Can't write file $fn: $!");
-    }
-    print CONF "$header\n" if $header;
+    };
+    print $conf_fh "$header\n" if $header;
     my $total = 0;
     if ( ref($hash) eq 'HASH' ) {
         foreach ( sort keys %$hash ) {
             return $self->error("Key cannot contain '=': $_") if /=/;
-            printf CONF "%-22s = ", $_;
+            printf $conf_fh "%-22s = ", $_;
             if ( ref( $hash->{$_} ) eq "ARRAY" ) {
-                print CONF join( ',', @{ $hash->{$_} } ) . "\n";
+                print $conf_fh join( ',', @{ $hash->{$_} } ) . "\n";
             }
             else {
-                print CONF $hash->{$_} . "\n";
+                print $conf_fh $hash->{$_} . "\n";
             }
             $total++;
         }
@@ -550,19 +552,19 @@ sub write_file {
         foreach (@$hash) {
             next unless /\S/;
             if ( ref($_) eq "ARRAY" ) {
-                print CONF join( ', ', @$_ ) . "\n";
+                print $conf_fh join( ', ', @$_ ) . "\n";
             }
             else {
-                print CONF $_ . "\n";
+                print $conf_fh $_ . "\n";
             }
             $total++;
         }
     }
     elsif ( ref($hash) eq 'SCALAR' ) {
-        printf CONF $$hash;
+        printf $conf_fh $$hash;
         $total++;
     }
-    close CONF;
+    close $conf_fh;
     if ($lock) {
         1 while unlink "$lockfile";
     }

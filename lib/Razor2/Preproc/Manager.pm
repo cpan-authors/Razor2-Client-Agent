@@ -14,11 +14,11 @@ sub new {
 
     my %self = ();
 
-    $self{deBase64}  = new Razor2::Preproc::deBase64  unless exists $args{no_deBase64};
-    $self{deQP}      = new Razor2::Preproc::deQP      unless exists $args{no_deQP};
-    $self{deHTML}    = new Razor2::Preproc::deHTMLxs  unless exists $args{no_deHTML};
-    $self{deNewline} = new Razor2::Preproc::deNewline unless exists $args{no_deNewline};
-    $self{deHTML_comment} = new Razor2::Preproc::deHTML_comment if exists $args{deHTML_comment};
+    $self{deBase64}  = Razor2::Preproc::deBase64->new  unless exists $args{no_deBase64};
+    $self{deQP}      = Razor2::Preproc::deQP->new      unless exists $args{no_deQP};
+    $self{deHTML}    = Razor2::Preproc::deHTMLxs->new  unless exists $args{no_deHTML};
+    $self{deNewline} = Razor2::Preproc::deNewline->new unless exists $args{no_deNewline};
+    $self{deHTML_comment} = Razor2::Preproc::deHTML_comment->new if exists $args{deHTML_comment};
     $self{rm} = $args{RM};
 
     return bless \%self, $class;
@@ -88,11 +88,9 @@ sub log2file {
     my ( $self, $msgref, $mailid ) = @_;
     my $len = length($$msgref);
     my $fn  = "/tmp/.razor.debug.msg.$$.$mailid";
-    if ( open OUT, ">$fn" ) {
-        print OUT $$msgref;
-        close OUT;
-    }
-    else {
+    if ( open my $out_fh, '>', $fn ) {
+        print $out_fh $$msgref;
+        close $out_fh;
     }
 }
 

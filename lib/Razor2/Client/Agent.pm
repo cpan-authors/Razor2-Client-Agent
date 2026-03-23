@@ -16,10 +16,10 @@ use IO::File;
 
 use Razor2::String qw(fisher_yates_shuffle);
 
-use base qw(Razor2::Client::Core);
-use base qw(Razor2::Client::Config);
-use base qw(Razor2::Logger);
-use base qw(Razor2::String);
+use parent qw(Razor2::Client::Core);
+use parent qw(Razor2::Client::Config);
+use parent qw(Razor2::Logger);
+use parent qw(Razor2::String);
 use Razor2::Preproc::Manager;
 use Data::Dumper;
 
@@ -141,7 +141,7 @@ sub do_conf {
     }
     if ( exists $self->{conf}->{logfile} ) {
         my $debuglevel = exists $self->{conf}->{debuglevel} ? $self->{conf}->{debuglevel} : 9;
-        my $logger = new Razor2::Logger(
+        my $logger = Razor2::Logger->new(
             LogDebugLevel => $debuglevel,
             LogTo         => $logto,
             LogPrefix     => $self->{breed},

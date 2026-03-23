@@ -888,7 +888,7 @@ sub prep_part {
     my $is_binary = ( $hdr =~ /^Content-Type-Encoding: 8-bit/ )
       || ( $body =~ /([\x00-\x1f|\x7f-\xff])/ and $1 !~ /[\r\n\t]/ );
 
-    my $enBase64 = new Razor2::Preproc::enBase64;
+    my $enBase64 = Razor2::Preproc::enBase64->new;
     $is_binary = $enBase64->isit($mailref);
     $enBase64->doit( \$body ) if $is_binary;
 

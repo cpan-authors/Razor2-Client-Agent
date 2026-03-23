@@ -47,7 +47,7 @@ sub vr4_signature {
 
     return $self->log( 1, "vr4_signature: Bad ep4: $ep4" ) unless ( $seed && $separator );
 
-    my $ehash = new Razor2::Signature::Ephemeral( seed => $seed, separator => $separator );
+    my $ehash = Razor2::Signature::Ephemeral->new( seed => $seed, separator => $separator );
     my $digest = $ehash->hexdigest($$text);
 
     my $sig = hextobase64($digest);

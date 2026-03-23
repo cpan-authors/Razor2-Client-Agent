@@ -17,10 +17,10 @@ use Errno qw(:POSIX);
 
 use Razor2::Client::Version;
 use Data::Dumper;
-use base qw(Razor2::String);
-use base qw(Razor2::Logger);
-use base qw(Razor2::Client::Engine);
-use base qw(Razor2::Errorhandler);
+use parent qw(Razor2::String);
+use parent qw(Razor2::Logger);
+use parent qw(Razor2::Client::Engine);
+use parent qw(Razor2::Errorhandler);
 use Razor2::Client::Version;
 use Razor2::String qw(hextobase64 makesis parsesis hmac_sha1 xor_key
   prep_mail debugobj to_batched_query
