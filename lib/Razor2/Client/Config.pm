@@ -10,6 +10,7 @@
 
 package Razor2::Client::Config;
 use strict;
+use warnings;
 use Data::Dumper;
 use File::Copy;
 use File::Spec;

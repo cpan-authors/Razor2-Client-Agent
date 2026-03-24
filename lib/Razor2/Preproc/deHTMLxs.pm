@@ -1,6 +1,7 @@
 package Razor2::Preproc::deHTMLxs;
 
 use strict;
+use warnings;
 
 use Exporter   ();
 use XSLoader   ();

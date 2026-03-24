@@ -11,6 +11,7 @@
 package Razor2::Client::Agent;
 
 use strict;
+use warnings;
 use Getopt::Long;
 use IO::File;
 

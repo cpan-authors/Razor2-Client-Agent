@@ -2,6 +2,7 @@
 
 package Razor2::Signature::Ephemeral;
 use strict;
+use warnings;
 use Data::Dumper;
 
 BEGIN {

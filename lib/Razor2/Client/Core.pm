@@ -11,6 +11,7 @@
 package Razor2::Client::Core;
 
 use strict;
+use warnings;
 use IO::Socket::IP;
 use IO::Select;
 use Errno qw(:POSIX);
