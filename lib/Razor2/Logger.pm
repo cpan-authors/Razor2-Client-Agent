@@ -3,6 +3,7 @@
 package Razor2::Logger;
 
 use strict;
+use warnings;
 use Razor2::Syslog;
 use Time::HiRes qw(gettimeofday);
 use POSIX qw(strftime);
@@ -120,7 +121,7 @@ sub log {
     }
     elsif ( $self->{LogType} eq 'file' ) {
 
-        my $now_string;
+        my $now_string = '';
         if ( $self->{LogTimestamp} ) {
             my ( $seconds, $microseconds ) = gettimeofday;
             $now_string = strftime $self->{LogTimeFormat}, localtime($seconds);

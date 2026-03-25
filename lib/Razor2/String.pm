@@ -1,5 +1,7 @@
 # $Id: String.pm,v 1.48 2005/06/13 21:09:59 vipul Exp $
 package Razor2::String;
+use strict;
+use warnings;
 
 use URI::Escape;
 use Razor2::Preproc::enBase64;
@@ -225,8 +227,8 @@ sub makesis {
 
 sub parsesis {
 
+    my $wantref = $_[1] ? 1 : 0;
     my $query = $_[1] || {};
-    my $wantref = 1 if $_[1];
 
     # Parse the query.
 
@@ -273,8 +275,8 @@ sub makesis_nue {
 
 sub parsesis_nue {
 
+    my $wantref = $_[1] ? 1 : 0;
     my $query = $_[1] || {};
-    my $wantref = 1 if $_[1];
 
     # Parse the query.
     $_[0] =~ s/\r\n$//;
@@ -372,7 +374,7 @@ sub to_batched_query {
             # end if batchmode with variables and cur doesn't match
             # end batch
             #
-            my ( $both, $diff ) = findsimilar( $last, $cur ) if ( $batchmode == 2 );
+            my ( $both, $diff ) = ( $batchmode == 2 ) ? findsimilar( $last, $cur ) : ();
             if (   ( $bqs && ( length($line) > ( $bqs * 1024 ) ) )
                 || ( $bql && ( $linecnt >= $bql ) )
                 || ( $batchmode == 2 && !$diff ) ) {
@@ -756,7 +758,7 @@ sub split_mime {
         #
         # $ver should be '1' or client name + version
         my $mimepart = "X-Razor2-Agent: $ver\n";
-        my $hrdlen   = length($mimepart);
+        my $hdrlen   = length($mimepart);
 
         # if it has initial blank line, hurray for rfc compliance
         if ( $$mailref =~ /^\n/ ) {
@@ -888,7 +890,7 @@ sub prep_part {
     my $is_binary = ( $hdr =~ /^Content-Type-Encoding: 8-bit/ )
       || ( $body =~ /([\x00-\x1f|\x7f-\xff])/ and $1 !~ /[\r\n\t]/ );
 
-    my $enBase64 = new Razor2::Preproc::enBase64;
+    my $enBase64 = Razor2::Preproc::enBase64->new;
     $is_binary = $enBase64->isit($mailref);
     $enBase64->doit( \$body ) if $is_binary;
 
@@ -952,7 +954,7 @@ sub prep_mail {
     }
 
     if ( ( my $len = length($orig_hdr) ) > $maxorighdr ) {
-        $hdr = "X-Razor2-Origlen-Header: $len\n" . $orig_hdr;
+        my $hdr = "X-Razor2-Origlen-Header: $len\n" . $orig_hdr;
         if ( length($hdr) > $maxorighdr ) {
             $hdr = substr $hdr, 0, $maxorighdr;
             $hdr =~ s/([^\n]+)$//s;    # remove last, incomplete line

@@ -11,6 +11,7 @@
 
 package Razor2::Errorhandler;
 use strict;
+use warnings;
 
 sub new {
     bless {}, shift;
