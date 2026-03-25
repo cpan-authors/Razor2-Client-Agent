@@ -89,11 +89,9 @@ sub log2file {
     my ( $self, $msgref, $mailid ) = @_;
     my $len = length($$msgref);
     my $fn  = "/tmp/.razor.debug.msg.$$.$mailid";
-    if ( open OUT, ">$fn" ) {
-        print OUT $$msgref;
-        close OUT;
-    }
-    else {
+    if ( open my $out_fh, '>', $fn ) {
+        print $out_fh $$msgref;
+        close $out_fh;
     }
 }
 
