@@ -6,6 +6,7 @@ use Razor2::Preproc::deHTML;
 use Razor2::Preproc::deNewline;
 use Razor2::Preproc::deHTML_comment;
 use Data::Dumper;
+use File::Temp ();
 use strict;
 use warnings;
 
@@ -88,10 +89,11 @@ sub preproc {
 sub log2file {
     my ( $self, $msgref, $mailid ) = @_;
     my $len = length($$msgref);
-    my $fn  = "/tmp/.razor.debug.msg.$$.$mailid";
-    if ( open my $out_fh, '>', $fn ) {
-        print $out_fh $$msgref;
-        close $out_fh;
+    my $fh = File::Temp->new(TEMPLATE => "razor_debug_XXXXXX", TMPDIR => 1, SUFFIX => ".$mailid");
+    my $fn = $fh->filename;
+    if ($fh) {
+        print $fh $$msgref;
+        close $fh;
     }
 }
 

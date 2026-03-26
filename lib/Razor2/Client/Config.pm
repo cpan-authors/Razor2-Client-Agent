@@ -12,6 +12,7 @@ package Razor2::Client::Config;
 use strict;
 use warnings;
 use Data::Dumper;
+use Fcntl qw(:flock);
 use File::Copy;
 use File::Spec;
 
@@ -93,9 +94,8 @@ sub read_conf {
     # insert things that should not be in conf here
     #
 
-    # turn off run-time warnings unless debug flag passed
-    # http://www.perldoc.com/perl5.6.1/pod/perllexwarn.html
-    $^W = 0 unless $conf->{debug};
+    # Warnings are now controlled by the `use warnings` pragma per-module.
+    # The old `$^W = 0` global suppression has been removed.
 
     # add full path to all config values that need them
     #
@@ -517,20 +517,21 @@ sub write_file {
 
     $fn = $1 if $fn =~ /^(\S+)$/;    # untaint $fn
 
-    # check for lock file
+    # file-based locking using flock to avoid race conditions
     my $lockfile = "$fn.lock";
     $lockfile = "${fn}_lock;1" if $^O eq 'VMS';
+    my $lock_fh;
     if ($lock) {
-        if ( -r "$lockfile" ) {
+        open( $lock_fh, '>', $lockfile ) or do {
+            return $self->error("Can't create lock file $lockfile: $!");
+        };
+        flock( $lock_fh, LOCK_EX | LOCK_NB ) or do {
+            close $lock_fh;
             return $self->error("File is locked, try again later: $lockfile");
-        }
-        else {
-            open( my $lock_fh, '>', "$fn.lock" ) or do {
-                return $self->error("Can't create lock file $fn.lock: $!");
-            };
-        }
+        };
     }
     open( my $conf_fh, $open_mode, $fn ) or do {
+        if ($lock_fh) { flock( $lock_fh, LOCK_UN ); close $lock_fh; unlink $lockfile; }
         return $self->error("Can't write file $fn: $!");
     };
     print $conf_fh "$header\n" if $header;
@@ -566,8 +567,10 @@ sub write_file {
         $total++;
     }
     close $conf_fh;
-    if ($lock) {
-        1 while unlink "$lockfile";
+    if ($lock_fh) {
+        flock( $lock_fh, LOCK_UN );
+        close $lock_fh;
+        unlink $lockfile;
     }
     $self->log( 5, "wrote $total " . ref($hash) . " items to file: $fn" );
 

@@ -18,19 +18,17 @@ sub new {
 }
 
 sub error {
-    no strict;
     my ( $self, $errstr, $construction_error ) = @_;
     if ($construction_error) {
-        my ( $package, @undef ) = caller();
-        my $location = "$package\::errstr";
-        my $spot     = *{$location}{SCALAR};
+        my ($package) = caller();
+        no strict 'refs';
+        my $spot = *{"${package}::errstr"}{SCALAR};
         $$spot = "$errstr\n";
     }
     else {
         $$self{errstr} = "$errstr\n";
     }
     $self->log( $self->{logerrors}, "Error: $errstr\n" ) if $self->{logerrors};
-    use strict;
     return;
 }
 

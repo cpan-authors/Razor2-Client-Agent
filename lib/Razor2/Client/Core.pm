@@ -134,34 +134,6 @@ sub nextserver {
     }
 }
 
-sub load_at_runtime {
-    my ( $self, $class, $sub, $args ) = @_;
-
-    $sub  = 'new' unless defined $sub;
-    $args = ""    unless defined $args;
-
-    eval "use $class";
-    if ($@) {
-        $self->log( 2, "$class not found, please to fix." );
-        return $self->error("\n\n$@");
-    }
-    my $evalstr;
-    if ( $sub && $sub ne "new" ) {
-        $evalstr = $class . "::$sub($args);";
-    }
-    else {
-        $evalstr = $class . "->new($args)";
-    }
-    if ( my $dude = eval $evalstr ) {
-        $self->log( 12, "Found and evaled $evalstr ==> $dude" );
-        return $dude;
-    }
-    else {
-        $self->log( 5, "Found but problem (bad args?) with $evalstr" );
-        return $self->error("Problem with $evalstr");
-    }
-}
-
 #
 # uses DNS to find Discovery servers
 # puts discovery servers in $self->{s}->{discovery}
@@ -1747,8 +1719,7 @@ sub connect {
 
     if ( $self->{conf}->{socks_server} ) {
 
-        my $socks_module = "Net::SOCKS";
-        eval "require $socks_module";
+        eval { require Net::SOCKS };
 
         $self->log( 6, "Will try to connect through the SOCKS server on $$self{conf}{socks_server}..." );
 
