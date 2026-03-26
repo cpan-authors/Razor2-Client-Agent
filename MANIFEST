@@ -44,7 +44,11 @@ MANIFEST			This list of files
 README.md
 SERVICE_POLICY
 t/basic.t
+t/errorhandler.t
 t/logger.t
+t/preproc.t
+t/signature.t
+t/string.t
 t/testit/html.1
 t/testit/html.1.deHTMLxs
 t/testit/html.2
