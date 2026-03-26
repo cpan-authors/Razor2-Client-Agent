@@ -1053,10 +1053,10 @@ sub loadservercache {
     my @fns;
     my $sep = '\.';
     $sep = '_' if $^O eq 'VMS';
-    if ( opendir D, $self->{razorhome} ) {
-        @fns = map { s/_/./g; "$self->{razorhome}/$_"; } grep /^server$sep[\S]+\.conf$/, readdir D;
+    if ( opendir my $dh, $self->{razorhome} ) {
+        @fns = map { s/_/./g; "$self->{razorhome}/$_"; } grep /^server$sep[\S]+\.conf$/, readdir $dh;
         @fns = map { /^(\S+)$/, $1 } @fns;                # untaint
-        closedir D;
+        closedir $dh;
     }
     foreach (@fns) {
         /server\.(.+)\.conf$/ and my $sn = $1;
