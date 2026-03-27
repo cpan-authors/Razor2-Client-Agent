@@ -8,7 +8,7 @@ use IO::File;
 use Exporter 'import';
 
 our @EXPORT  = qw();
-our $VERSION = '0.03';
+our $VERSION = '2.87';
 
 # Preloaded methods go here.
 
