@@ -24,7 +24,7 @@ use parent qw(Razor2::String);
 use Razor2::Preproc::Manager;
 
 our $PROTOCOL = $Razor2::Client::Version::PROTOCOL;
-our $VERSION  = $Razor2::Client::Version::VERSION;
+our $VERSION  = '2.87';
 
 sub new {
     my ( $class, $breed ) = @_;
