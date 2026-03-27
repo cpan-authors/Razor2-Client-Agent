@@ -22,7 +22,6 @@ use parent qw(Razor2::Client::Config);
 use parent qw(Razor2::Logger);
 use parent qw(Razor2::String);
 use Razor2::Preproc::Manager;
-use Data::Dumper;
 
 our $PROTOCOL = $Razor2::Client::Version::PROTOCOL;
 our $VERSION  = $Razor2::Client::Version::VERSION;

@@ -5,18 +5,12 @@ use warnings;
 
 use URI::Escape;
 use Razor2::Preproc::enBase64;
-use Data::Dumper;
 
-BEGIN {
-  eval  { require Digest::SHA;  import Digest::SHA  qw(sha1_hex); 1 }
-  or do { require Digest::SHA1; import Digest::SHA1 qw(sha1_hex) }
-}
+use Digest::SHA qw(sha1_hex);
 
 #use MIME::Parser;
 
-require Exporter;
-
-our @ISA = qw(Exporter);
+use Exporter 'import';
 
 our @EXPORT = qw( hmac_sha1 xor_key
   from_batched_query

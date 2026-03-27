@@ -17,12 +17,10 @@ use IO::Select;
 use Errno qw(:POSIX);
 
 use Razor2::Client::Version;
-use Data::Dumper;
 use parent qw(Razor2::String);
 use parent qw(Razor2::Logger);
 use parent qw(Razor2::Client::Engine);
 use parent qw(Razor2::Errorhandler);
-use Razor2::Client::Version;
 use Razor2::String qw(hextobase64 makesis parsesis hmac_sha1 xor_key
   prep_mail debugobj to_batched_query
   from_batched_query hexbits2hash
@@ -1720,6 +1718,10 @@ sub connect {
     if ( $self->{conf}->{socks_server} ) {
 
         eval { require Net::SOCKS };
+        if ($@) {
+            $self->log( 3, "Net::SOCKS not available, cannot use SOCKS proxy: $@" );
+        }
+        else {
 
         $self->log( 6, "Will try to connect through the SOCKS server on $$self{conf}{socks_server}..." );
 
@@ -1737,6 +1739,8 @@ sub connect {
             }
 
         }
+
+        } # else Net::SOCKS available
 
     }
 

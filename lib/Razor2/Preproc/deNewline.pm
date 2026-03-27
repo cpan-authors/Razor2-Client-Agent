@@ -2,8 +2,6 @@ package Razor2::Preproc::deNewline;
 use strict;
 use warnings;
 
-use MIME::QuotedPrint;
-
 sub new {
     return bless {}, shift;
 }

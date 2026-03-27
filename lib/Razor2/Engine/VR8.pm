@@ -4,7 +4,6 @@ use warnings;
 
 use Razor2::Signature::Whiplash;
 use Razor2::String qw(hextobase64);
-use Data::Dumper;
 
 sub new {
 
