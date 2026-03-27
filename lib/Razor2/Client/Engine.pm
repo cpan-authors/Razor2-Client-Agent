@@ -2,7 +2,6 @@ package Razor2::Client::Engine;
 
 use strict;
 use warnings;
-use Data::Dumper;
 use Razor2::Signature::Ephemeral;
 use Razor2::Engine::VR8;
 use Razor2::Preproc::Manager;

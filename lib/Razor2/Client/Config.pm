@@ -11,7 +11,6 @@
 package Razor2::Client::Config;
 use strict;
 use warnings;
-use Data::Dumper;
 use Fcntl qw(:flock);
 use File::Copy;
 use File::Spec;
