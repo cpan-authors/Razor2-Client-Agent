@@ -82,11 +82,11 @@ jobs:
       matrix:
         perl-version: ${{ fromJson(needs.perl-versions.outputs.perl-versions) }}
 
-    container:
-      image: perldocker/perl-tester:${{ matrix.perl-version }}
-
     steps:
       - uses: actions/checkout@v4
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl-version }}
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
