@@ -1,121 +1,110 @@
-[![Build Status](https://travis-ci.org/toddr/Razor2-Client-Agent.png?branch=master)](https://travis-ci.org/toddr/Razor2-Client-Agent)
+[![testsuite](https://github.com/cpan-authors/Razor2-Client-Agent/actions/workflows/testsuite.yml/badge.svg)](https://github.com/cpan-authors/Razor2-Client-Agent/actions/workflows/testsuite.yml)
 
-                    Vipul's Razor v2 README
+# Razor2-Client-Agent
 
-Vipul's Razor is a distributed, collaborative, spam detection and
-filtering network. Through user contribution, Razor establishes a
-distributed and constantly updating catalogue of spam in propagation that
-is consulted by email clients to filter out known spam. Detection is done
-with statistical and randomized signatures that efficiently spot mutating
-spam content. User input is validated through reputation assignments based
-on consensus on report and revoke assertions which in turn is used for
-computing confidence values associated with individual signatures.
+Vipul's Razor v2 — a distributed, collaborative, spam detection and
+filtering network agent.
 
-Vipul's Razor v2 agent software is available from project's homepage at
-http://razor.sf.net. Razor Agents are written in Perl and will work on
-most Unix operating systems and others OSes for which perl is available.
-Installation and usage instructions can be found in the INSTALL document
-in the distribution.
+## Description
 
-Vipul's Razor v2 is almost a complete rewrite of Razor v1. The following
-is a list of the most significant new features:
+Razor establishes a distributed and constantly updating catalogue of spam
+in propagation that is consulted by email clients to filter out known spam.
+Detection is done with statistical and randomized signatures that
+efficiently spot mutating spam content. User input is validated through
+reputation assignments based on consensus on report and revoke assertions
+which in turn is used for computing confidence values associated with
+individual signatures.
 
- 1 New Protocol
+## Installation
 
-    The Razor v2 protocol has been completely redesigned. The new
-    protocol is based on exchange of _Structured Information Strings_,
-    that are similar to URIs and can be parsed with URI decoding
-    libraries. v2 protocol supports _Pipelining_, which means Razor
-    Agents can keep a connection open with server to eliminate the
-    latency introduced by TCP 3-way handshake and 4-way breakdown for
-    every connection. The new protocol semantics allow seamless
-    introduction of new signature schemes.
+From CPAN:
 
- 2 Ephemeral Signatures
+    cpanm Razor2::Client::Agent
 
-    Ephemeral Signatures are short-lived signatures based on
-    collaboratively computed random numbers. Ephemeral Signatures select a
-    section of text from the spam message based on a random number that
-    changes every so often. This makes the hashing scheme a moving target,
-    and spammers can't exploit it because they don't know which part of
-    the message will be hashed after the random number rollover.
+From source:
 
- 3 Preprocessors
+    perl Makefile.PL
+    make
+    make test
+    make install
 
-    Razor v2 supports several preprocessors. Preprocessors alter the the
-    text of a spam before a hash is computed. This version includes
-    preprocessors to decode Base64 encoded messages, decode QP encoded
-    messages and convert HTML to plaintext. Spammers employ several
-    techniques that hide mutations in various encoding. Preprocessors
-    defeat such techniques by hashing the content that a recipient
-    actually sees in his/her mail user agent.
+After installation, set up your Razor home directory and register:
 
- 4 Multiple Filteration Engines
+    razor-admin -create
+    razor-admin -register
 
-    Razor v2 supports multiple engines. An engine is logical unit that
-    encapsulates a particular type of filteration service. Razor v2
-    currently supports four engines - VR1 which is equivalent to Razor v1,
-    VR2 that is based on SHA1 signatures of bodytext, VR3 that is based on
-    Nilsimsa signatures, and VR4 based on Ephemeral hashes. New engines
-    can be seamlessly plugged into the service as and when required.
+## Usage
 
- 5 Complete Backward Compatibility with Razor v1
+**Check mail for spam:**
 
-    The VR1 engine is functionally equivalent to the Razor v1 service and
-    uses the same database. This means users who transition from v1 to v2
-    will still get the benefit of several million signatures known to the
-    v1 service.
+    cat message.eml | razor-check
+    razor-check ./message.eml
 
- 6 Base64 signature encoding
+`razor-check` exits with `0` if the mail is spam, `1` if not.
 
-    Signatures are now encoded as base 64 numbers instead of base 16
-    (hex), reducing traffic that goes over the wire by 33%.
+**Report spam:**
 
- 7 Truth Evaluation System (TeS)
+    cat spam.eml | razor-report
 
-    Razor v2 has a transparent, back-end component known as TeS. TeS is a
-    combination of a reputation system and pattern recognition heuristics
-    that assigns trust to reporters and confidence values (between 0-100)
-    to every signature. Users can set an acceptable confidence level in
-    their Razor configuration. The server also publishes a recommended
-    confidence level. TeS has been designed to eliminate false positives
-    of legit bulk email that were occasionally generated by bad reports
-    in Razor v1.
+**Revoke a false positive:**
 
- 8 Submission of entire spam messages
+    cat ham.eml | razor-revoke
 
-    Razor v2 accepts the entire body text of spam messages not previously
-    known to the system. This lets Razor v2 compute new Ephemeral
-    Signatures every n hours as well as seed the database whenever a new
-    signature scheme and/or preprocessor is introduced. It should be noted
-    that Razor v2 _does not_ accept contents of legit email during a check
-    dialogue. Only signatures are sent when checking email.
+For integration with mail processors like SpamAssassin or procmail,
+see the individual tool man pages: `razor-check(1)`, `razor-report(1)`,
+`razor-revoke(1)`, `razor-admin(1)`.
 
- 9 Revocation
+## Configuration
 
-    Razor v2 allows users to revoke messages that they don't consider to
-    be spam. Revocation input is fed into TeS, that adjusts the confidence
-    value of a signature or remove it from the database as necessary.
-    Revocation is done through a tool called razor-revoke, which is a part
-    of the new Razor distribution.
+The configuration file is `razor-agent.conf`, located in your Razor
+home directory (typically `~/.razor/`). Create or regenerate it with:
 
-10 Reporter Registration
+    razor-admin -create
 
-    Razor v2 requires reporters to be registered. This lets reporters
-    build a reputation over time, so their reports and revocations are
-    weighed according to their reputation value. Report requires users to
-    authenticate which is done using a CRAM-SHA1 authentication scheme.
+Key settings:
 
-11 Content classes
+| Setting              | Default     | Description                        |
+|----------------------|-------------|------------------------------------|
+| `debuglevel`         | `3`         | Log verbosity (0-20)               |
+| `logfile`            | `razor-agent.log` | Log destination (`syslog`, `stderr`, or path) |
+| `min_cf`             | `ac`        | Minimum confidence filter (`ac` = server-recommended) |
+| `report_headers`     | `1`         | Include headers in reports         |
+| `turn_off_discovery` | `0`        | Disable server discovery           |
+| `whitelist`          | `razor-whitelist` | Whitelist file                |
 
-    Razor v2 introduces the concept of content classes. A content class is
-    a set of messages that represents variations on the same content. As
-    new reports come in, Nomination servers associate them to an existing
-    content class, if a (close) match is found. Additionally, Razor v2
-    treats each MIME attachment is a separate content class, so spammers
-    MIME attachment can be individually tracked (which is very useful in
-    case of viruses).
+See `razor-agent.conf(5)` for full documentation.
 
+## Key Features
 
-              $Id: README,v 1.4 2005/06/28 22:19:07 jpr5 Exp $
+- **Ephemeral Signatures** — short-lived signatures based on collaboratively
+  computed random numbers, making the hashing scheme a moving target
+- **Multiple Engines** — pluggable filtration engines (VR4 Ephemeral, VR8 SHA)
+- **Preprocessors** — Base64, Quoted-Printable, and HTML decoding to hash
+  the content recipients actually see
+- **Truth Evaluation System (TeS)** — reputation-based trust and confidence
+  scoring to minimize false positives
+- **Revocation** — users can revoke incorrectly classified messages
+- **Pipelining** — persistent connections to reduce latency
 
+## Requirements
+
+- Perl 5.10 or later
+- Core modules: Digest::SHA, MIME::Base64, URI::Escape, File::Copy, File::Spec
+- IO::Socket::IP
+- C compiler (for the XS HTML preprocessor)
+
+## Documentation
+
+- `razor-check(1)` — check mail against the Razor catalogue
+- `razor-report(1)` — report spam to the Razor catalogue
+- `razor-revoke(1)` — revoke a previous spam report
+- `razor-admin(1)` — admin tool for registration and server discovery
+- `razor-agent.conf(5)` — configuration file format
+- `razor-agents(1)` — overview of all Razor agents
+- `razor-whitelist(5)` — whitelist file format
+
+## License
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself. See [perlartistic](https://perldoc.perl.org/perlartistic)
+and [perlgpl](https://perldoc.perl.org/perlgpl).
