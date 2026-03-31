@@ -23,15 +23,20 @@ WriteMakefile(
     ( $ExtUtils::MakeMaker::VERSION >= 6.3002 ? ( 'LICENSE' => 'perl', ) : () ),
     EXE_FILES => [qw( bin/razor-client bin/razor-admin bin/razor-check bin/razor-report bin/razor-revoke )],
     PREREQ_PM => {
-        'IO::Socket::IP' => 0,
         'Digest::SHA'    => 0,
         'File::Copy'     => 0,
         'File::Spec'     => 0,
+        'File::Temp'     => 0,
         'Getopt::Long'   => 0,
+        'IO::Socket::IP' => 0,
         'MIME::Base64'   => 0,
-        'Test::More'     => 0,
         'Time::HiRes'    => 0,
         'URI::Escape'    => 0,
+        'parent'         => 0,
+    },
+    TEST_REQUIRES => {
+        'File::Temp'  => 0,
+        'Test::More'  => 0,
     },
     MAN1PODS => {
         'docs/razor-check.pod'  => '$(INST_MAN1DIR)/razor-check.1',
