@@ -857,7 +857,7 @@ sub parse_mbox {
             $fh = $file;
         }
         else {
-            open $fh, "<$file" or return $self->error("Can't open $file: $!");
+            open $fh, '<', $file or return $self->error("Can't open $file: $!");
         }
 
         my $line = <$fh>;
