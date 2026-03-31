@@ -49,12 +49,12 @@ WriteMakefile(
 
             #homepage    => 'http://razor.sourceforge.net/',
             bugtracker => {
-                web => 'https://github.com/toddr/Razor2-Client-Agent/issues',
+                web => 'https://github.com/cpan-authors/Razor2-Client-Agent/issues',
             },
             repository => {
                 type => 'git',
-                url  => 'https://github.com/toddr/Razor2-Client-Agent.git',
-                web  => 'https://github.com/toddr/Razor2-Client-Agent',
+                url  => 'https://github.com/cpan-authors/Razor2-Client-Agent.git',
+                web  => 'https://github.com/cpan-authors/Razor2-Client-Agent',
             },
 
             #MailingList => 'https://sourceforge.net/mailarchive/forum.php?forum_name=razor-users',
