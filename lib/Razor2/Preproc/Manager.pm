@@ -36,7 +36,7 @@ sub preproc {
     my $lengths = { '1_orig' => length($$bodyref) } if $dolength;
 
     #-- $self->{rm}->{log}->log(12, "before_deBase64:");
-    if ( exists $$self{deBase64} && $self->{deBase64}->isit($bodyref) ) {
+    if ( exists $self->{deBase64} && $self->{deBase64}->isit($bodyref) ) {
         $self->{deBase64}->doit($bodyref);
     }
 
@@ -47,7 +47,7 @@ sub preproc {
 
     #-- $self->{rm}->{log}->log(12, "before_deQP:");
     my $isQP;
-    if ( exists $$self{deQP} && ( $isQP = $self->{deQP}->isit($bodyref) ) ) {
+    if ( exists $self->{deQP} && ( $isQP = $self->{deQP}->isit($bodyref) ) ) {
         $self->{deQP}->doit($bodyref);
     }
 
@@ -57,18 +57,18 @@ sub preproc {
     $lengths->{'3_after_deQP'} = length($$bodyref) if $dolength;
 
     #-- $self->{rm}->{log}->log(12, "before_deHTML:");
-    if ( exists $$self{deHTML} && $self->{deHTML}->isit($bodyref) ) {
+    if ( exists $self->{deHTML} && $self->{deHTML}->isit($bodyref) ) {
         $self->{deHTML}->doit($bodyref);
     }
 
     #-- $self->{rm}->{log}->log(12, "after_deHTML:");
 
-    if ( exists $$self{deHTML_comment} && $self->{deHTML_comment}->isit($bodyref) ) {
+    if ( exists $self->{deHTML_comment} && $self->{deHTML_comment}->isit($bodyref) ) {
         $self->{deHTML_comment}->doit($bodyref);
     }
 
     #-- $self->{rm}->{log}->log(12, "before_deNewline:");
-    if ( exists $$self{deNewline} ) {
+    if ( exists $self->{deNewline} ) {
         $self->{deNewline}->doit($bodyref);
     }
 
@@ -87,13 +87,9 @@ sub preproc {
 
 sub log2file {
     my ( $self, $msgref, $mailid ) = @_;
-    my $len = length($$msgref);
     my $fh = File::Temp->new(TEMPLATE => "razor_debug_XXXXXX", TMPDIR => 1, SUFFIX => ".$mailid");
-    my $fn = $fh->filename;
-    if ($fh) {
-        print $fh $$msgref;
-        close $fh;
-    }
+    print $fh $$msgref;
+    close $fh;
 }
 
 1;
