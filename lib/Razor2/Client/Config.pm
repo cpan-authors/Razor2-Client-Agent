@@ -410,7 +410,7 @@ sub my_readlink {
             $fn = readlink $fn;
             return unless defined $fn;               # broken symlink
             $fn = $1 if $fn =~ /^(\S+)$/;           # untaint readlink
-            $fn = "$dir/$fn" unless $fn =~ /^\//;
+            $fn = "$dir/$fn" unless $fn =~ /^\// || $fn =~ /^[A-Za-z]:/;
         }
         else {
             $fn = readlink $fn;
