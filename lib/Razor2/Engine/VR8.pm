@@ -16,8 +16,6 @@ sub new {
         rm              => $args{RM},
     }, $class;
 
-    die unless $self;
-
     return $self;
 
 }
