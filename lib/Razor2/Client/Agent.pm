@@ -1103,6 +1103,8 @@ sub writeservers {
 
 1;
 
+=for markdown [![testsuite](https://github.com/cpan-authors/Razor2-Client-Agent/actions/workflows/testsuite.yml/badge.svg)](https://github.com/cpan-authors/Razor2-Client-Agent/actions/workflows/testsuite.yml)
+
 =head1 NAME
 
 Razor2::Client::Agent - Command-line interface for Vipul's Razor spam detection
