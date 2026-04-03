@@ -99,6 +99,22 @@ use Razor2::String;
         "makesis/parsesis correctly round-trips URI-special characters" );
 }
 
+{
+    # parsesis must not mutate the caller's argument
+    my $sis = makesis( p => 0, cf => 95 );
+    my $original = $sis;
+    my %parsed = parsesis($sis);
+    is( $sis, $original, "parsesis does not mutate the input string" );
+}
+
+{
+    # Values containing '=' after URI-unescaping should round-trip correctly
+    my $sis = makesis( token => 'a=b=c' );
+    my %parsed = parsesis($sis);
+    is( $parsed{token}, 'a=b=c',
+        "parsesis preserves values containing '=' via URI escaping" );
+}
+
 # --- makesis_nue / parsesis_nue ---
 
 {
@@ -109,6 +125,14 @@ use Razor2::String;
     my %parsed = parsesis_nue($sis);
     is( $parsed{a}, '1', "parsesis_nue recovers a=1" );
     is( $parsed{b}, '2', "parsesis_nue recovers b=2" );
+}
+
+{
+    # parsesis_nue must not mutate the caller's argument
+    my $sis = makesis_nue( x => 'y' );
+    my $original = $sis;
+    my %parsed = parsesis_nue($sis);
+    is( $sis, $original, "parsesis_nue does not mutate the input string" );
 }
 
 # --- findsimilar ---
