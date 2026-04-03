@@ -8,7 +8,7 @@
 ##
 ## $Id: Makefile.PL,v 1.30 2007/05/08 22:47:53 rsoderberg Exp $
 
-our $VERSION = "2.87";
+our $VERSION = "2.88";
 
 use ExtUtils::MakeMaker;
 

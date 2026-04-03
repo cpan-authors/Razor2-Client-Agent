@@ -49,6 +49,7 @@ t/basic.t
 t/config.t
 t/errorhandler.t
 t/logger.t
+t/manager.t
 t/preproc.t
 t/signature.t
 t/string.t

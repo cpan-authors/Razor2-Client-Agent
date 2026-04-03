@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use XSLoader   ();
-our $VERSION = '2.87';
+our $VERSION = '2.88';
 
 XSLoader::load( 'Razor2::Preproc::deHTMLxs', $VERSION );
 

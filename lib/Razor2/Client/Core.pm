@@ -26,7 +26,7 @@ use Razor2::String qw(hextobase64 makesis parsesis hmac_sha1 xor_key
   from_batched_query hexbits2hash
   fisher_yates_shuffle);
 
-our $VERSION = '2.87';
+our $VERSION = '2.88';
 our $PROTOCOL = $Razor2::Client::Version::PROTOCOL;
 
 sub new {

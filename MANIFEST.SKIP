@@ -19,3 +19,4 @@
 ^Razor2-Client-Agent-\d\.\d+/
 ^cpanfile$
 ^.perltidyrc$
+^CLAUDE\.md$
