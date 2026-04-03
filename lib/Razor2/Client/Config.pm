@@ -635,3 +635,149 @@ sub default_agent_conf {
 
 1;
 
+=head1 NAME
+
+Razor2::Client::Config - Configuration management for Vipul's Razor
+
+=head1 SYNOPSIS
+
+    # Typically used via Razor2::Client::Agent, not directly
+    use Razor2::Client::Agent;
+
+    my $agent = Razor2::Client::Agent->new('razor-check');
+    $agent->read_options() or die $agent->errstr;
+    $agent->do_conf()      or die $agent->errstr;
+
+    # Access configuration values
+    my $debuglevel = $agent->{conf}{debuglevel};
+
+=head1 DESCRIPTION
+
+Razor2::Client::Config handles all configuration file and identity
+management for the Razor2 client.  It reads and writes the
+F<razor-agent.conf> configuration file, resolves the razorhome directory,
+and manages user identity files used for authentication with Razor servers.
+
+This module is a parent class of L<Razor2::Client::Agent> and is not
+typically instantiated directly.
+
+=head1 METHODS
+
+=over 4
+
+=item B<read_conf($params)>
+
+Reads the Razor configuration.  Resolves which config file to use
+(command-line override, user home, or system default), merges defaults
+with file values and command-line options, and stores the result in
+C<< $self->{conf} >>.
+
+C<$params> is an optional hash reference of additional overrides.
+
+Returns the configuration hash reference on success.
+
+=item B<compute_razorconf()>
+
+Determines the path to the F<razor-agent.conf> file.  Checks the user's
+razorhome first (F<~/.razor/razor-agent.conf>), then the system default
+(F</etc/razor/razor-agent.conf>).  Sets C<< $self->{razorconf} >> and
+C<< $self->{computed_razorconf} >>.
+
+=item B<write_conf($hash)>
+
+Writes configuration to the F<razor-agent.conf> file.  If C<$hash> is not
+provided, reads the current file and merges with defaults.
+
+=item B<find_home($rhome)>
+
+Resolves the razorhome directory.  Search order: command-line C<-home>
+option, C<razorhome> from config file, C<$HOME/.razor/>, config file
+directory.  Sets C<< $self->{razorhome} >>.
+
+On VMS, uses C<_razor> instead of C<.razor>.
+
+=item B<create_home($rhome)>
+
+Creates the razorhome directory at C<$rhome> with mode 0755.
+
+=item B<compute_identity()>
+
+Resolves the identity file path from command-line options, configuration,
+or the default (F<E<lt>razorhomeE<gt>/identity>).  Follows symlinks.
+
+=item B<get_ident()>
+
+Reads and returns the identity file as a hash reference with C<user> and
+C<pass> keys.  Warns if the file is world-readable.
+
+=item B<save_ident($ident)>
+
+Writes an identity hash (C<user>, C<pass>) to disk with mode 0600.
+Creates a symlink from F<identity> to the user-specific file unless
+C<-i> was specified.  Falls back to file copy on systems without symlink
+support.
+
+Returns the identity file path on success.
+
+=item B<read_file($filename, $defaults, $nothash)>
+
+General-purpose config file reader.  In hash mode (default), parses
+C<key = value> lines into a hash reference, skipping comments.  In
+array mode (C<$nothash> true), returns an array reference of lines.
+
+C<$defaults> provides initial values that file contents override.
+
+=item B<write_file($filename, $data, $append, $header, $lock)>
+
+Writes data to a file.  Accepts a hash reference (written as C<key = value>),
+array reference (one item per line), or scalar reference (raw content).
+Supports append mode, a header string, and advisory file locking via
+L<flock(2)>.
+
+=item B<default_agent_conf()>
+
+Returns a hash reference of default agent configuration values.
+
+=item B<default_server_conf()>
+
+Returns a hash reference of default per-server configuration values.
+
+=back
+
+=head1 FILES
+
+=over 4
+
+=item F</etc/razor/razor-agent.conf>
+
+System-wide configuration file.
+
+=item F<~/.razor/razor-agent.conf>
+
+Per-user configuration file (takes precedence over system config).
+
+=item F<~/.razor/identity>
+
+Symlink to the active identity file.
+
+=item F<~/.razor/identity-E<lt>userE<gt>>
+
+Identity file containing credentials for a registered user.
+
+=back
+
+=head1 SEE ALSO
+
+L<razor-agent.conf(5)>, L<Razor2::Client::Agent>, L<Razor2::Client::Core>
+
+=head1 AUTHORS
+
+Vipul Ved Prakash, E<lt>mail@vipul.netE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=cut
+
