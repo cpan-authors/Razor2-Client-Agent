@@ -218,7 +218,7 @@ sub find_home {
     }
 
     if ( defined $self->{opt}->{razorhome} ) {
-        $self->{razorhome_computed} = $self->{razorhome};
+        $self->{razorhome_computed} = $self->{opt}->{razorhome};
         return 1;
     }
 
@@ -408,11 +408,13 @@ sub my_readlink {
         if ( $fn =~ /^(.*)\/([^\/]+)$/ ) {
             my $dir = $1;
             $fn = readlink $fn;
+            return unless defined $fn;               # broken symlink
             $fn = $1 if $fn =~ /^(\S+)$/;           # untaint readlink
-            $fn = "$dir/$fn" unless $fn =~ /^\//;
+            $fn = "$dir/$fn" unless $fn =~ /^\// || $fn =~ /^[A-Za-z]:/;
         }
         else {
             $fn = readlink $fn;
+            return unless defined $fn;               # broken symlink
             $fn = $1 if $fn =~ /^(\S+)$/;           # untaint readlink
         }
     }

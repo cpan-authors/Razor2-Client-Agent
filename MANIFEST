@@ -46,6 +46,7 @@ README.md
 SECURITY.md
 SERVICE_POLICY
 t/basic.t
+t/config.t
 t/errorhandler.t
 t/logger.t
 t/preproc.t
