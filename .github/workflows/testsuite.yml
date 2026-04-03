@@ -64,7 +64,7 @@ jobs:
         uses: perl-actions/perl-versions@v1
         with:
           since-perl: 5.10
-          with-devel: true
+          with-devel: false
 
   linux:
     name: "Perl ${{ matrix.perl-version }}"
