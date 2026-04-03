@@ -10,6 +10,7 @@
 
 package Razor2::Client::Agent;
 
+use 5.010;
 use strict;
 use warnings;
 use Getopt::Long;

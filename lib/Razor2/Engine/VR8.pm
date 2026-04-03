@@ -1,4 +1,5 @@
 package Razor2::Engine::VR8;
+use 5.010;
 use strict;
 use warnings;
 

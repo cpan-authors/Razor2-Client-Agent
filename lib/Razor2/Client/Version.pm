@@ -9,6 +9,7 @@
 ## $Id: Version.pm,v 1.45 2007/05/10 20:32:10 rsoderberg Exp $
 
 package Razor2::Client::Version;
+use 5.010;
 use strict;
 use warnings;
 

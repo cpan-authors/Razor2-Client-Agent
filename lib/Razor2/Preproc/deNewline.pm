@@ -1,4 +1,5 @@
 package Razor2::Preproc::deNewline;
+use 5.010;
 use strict;
 use warnings;
 

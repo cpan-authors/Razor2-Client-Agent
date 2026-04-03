@@ -1,5 +1,6 @@
 # $Id: String.pm,v 1.48 2005/06/13 21:09:59 vipul Exp $
 package Razor2::String;
+use 5.010;
 use strict;
 use warnings;
 

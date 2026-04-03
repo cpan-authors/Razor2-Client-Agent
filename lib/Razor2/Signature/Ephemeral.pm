@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 package Razor2::Signature::Ephemeral;
+use 5.010;
 use strict;
 use warnings;
 

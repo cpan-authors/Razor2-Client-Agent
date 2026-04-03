@@ -1,4 +1,5 @@
 package Razor2::Preproc::deBase64;
+use 5.010;
 use strict;
 use warnings;
 

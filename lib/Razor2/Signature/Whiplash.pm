@@ -6,6 +6,7 @@
 ## $Id: Whiplash.pm,v 1.7 2007/05/08 22:22:36 rsoderberg Exp $
 
 package Razor2::Signature::Whiplash;
+use 5.010;
 use strict;
 use warnings;
 

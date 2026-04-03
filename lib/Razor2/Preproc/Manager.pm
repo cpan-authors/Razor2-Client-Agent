@@ -6,6 +6,7 @@ use Razor2::Preproc::deHTML;
 use Razor2::Preproc::deNewline;
 use Razor2::Preproc::deHTML_comment;
 use File::Temp ();
+use 5.010;
 use strict;
 use warnings;
 

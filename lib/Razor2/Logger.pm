@@ -2,6 +2,7 @@
 
 package Razor2::Logger;
 
+use 5.010;
 use strict;
 use warnings;
 use Razor2::Syslog;

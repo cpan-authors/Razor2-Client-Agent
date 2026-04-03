@@ -1,5 +1,6 @@
 package Razor2::Client::Engine;
 
+use 5.010;
 use strict;
 use warnings;
 use Razor2::Signature::Ephemeral;

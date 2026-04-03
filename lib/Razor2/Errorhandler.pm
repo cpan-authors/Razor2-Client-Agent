@@ -10,6 +10,7 @@
 ## $Id: Errorhandler.pm,v 1.5 2005/08/03 21:43:09 rsoderberg Exp $
 
 package Razor2::Errorhandler;
+use 5.010;
 use strict;
 use warnings;
 

@@ -10,6 +10,7 @@
 
 package Razor2::Client::Core;
 
+use 5.010;
 use strict;
 use warnings;
 use IO::Socket::IP;
