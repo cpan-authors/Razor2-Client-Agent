@@ -221,18 +221,19 @@ sub makesis {
 
 sub parsesis {
 
+    my $text = $_[0];
     my $wantref = $_[1] ? 1 : 0;
     my $query = $_[1] || {};
 
     # Parse the query.
 
-    $_[0] =~ s/\n$//;    # SIS shouldn't have this!
-    $_[0] =~ s/\r$//;    # SIS shouldn't have this!
+    $text =~ s/\n$//;    # SIS shouldn't have this!
+    $text =~ s/\r$//;    # SIS shouldn't have this!
 
-    my @pairs = split /\&/, $_[0];
+    my @pairs = split /\&/, $text;
 
     for (@pairs) {
-        my ( $key, $value ) = split /=/, $_;
+        my ( $key, $value ) = split /=/, $_, 2;
         $query->{$key} = defined $value ? uri_unescape($value) : '';
     }
 
@@ -269,15 +270,16 @@ sub makesis_nue {
 
 sub parsesis_nue {
 
+    my $text = $_[0];
     my $wantref = $_[1] ? 1 : 0;
     my $query = $_[1] || {};
 
     # Parse the query.
-    $_[0] =~ s/\r\n$//;
-    my @pairs = split /\&/, $_[0];
+    $text =~ s/\r\n$//;
+    my @pairs = split /\&/, $text;
 
     for (@pairs) {
-        my ( $key, $value ) = split /=/, $_;
+        my ( $key, $value ) = split /=/, $_, 2;
         $query->{$key} = $value;
     }
 
