@@ -11,8 +11,10 @@ sub new {
     my ( $class, %args ) = @_;
 
     my $self = bless {
-        seed => $args{seed} || 42,
-        separator => encode_separator( $args{separator} ) || encode_separator("10"),
+        seed      => $args{seed} || 42,
+        separator => defined $args{separator}
+            ? encode_separator( $args{separator} )
+            : encode_separator("10"),
     }, $class;
     $self;
 
