@@ -74,7 +74,7 @@ subtest 'my_readlink follows valid symlink' => sub {
 
     my $config = Razor2::Client::Config->new;
     my $result = $config->my_readlink($link);
-    ( my $norm_result = $result // '' ) =~ s{\\}{/}g;
+    ( my $norm_result = defined $result ? $result : '' ) =~ s{\\}{/}g;
     ( my $norm_target = $target )        =~ s{\\}{/}g;
     is( $norm_result, $norm_target, 'symlink resolved to target' );
 };
@@ -88,7 +88,7 @@ subtest 'my_readlink handles dangling symlink without crashing' => sub {
     # readlink succeeds on dangling symlinks (returns target path),
     # but the target doesn't exist. The function should not crash.
     my $result = $config->my_readlink($link);
-    ( my $norm_result   = $result // '' )        =~ s{\\}{/}g;
+    ( my $norm_result   = defined $result ? $result : '' )        =~ s{\\}{/}g;
     ( my $norm_expected = "$tmpdir/nonexistent" ) =~ s{\\}{/}g;
     is( $norm_result, $norm_expected,
         'dangling symlink resolved to target path without crashing' );
