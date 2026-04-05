@@ -623,7 +623,7 @@ sub compute_sigs {
                     for (@sigs) {
 
                         my $line = "$objp->{id} e$engine_no: $_";
-                        $line .= ", ep4: $obj->{ep4}" if ( $engine_no eq '4' );
+                        $line .= ", ep4: $obj->{ep4}" if ( $engine_no == 4 );
                         push @printable_sigs, $line;
 
                     }
@@ -671,7 +671,7 @@ sub make_query {
         else {
 
             my %query = ( a => 'c', e => $params->{eng}, s => $params->{sig} );
-            $query{ep4} = $params->{ep4} if $query{e} eq '4';
+            $query{ep4} = $params->{ep4} if $query{e} == 4;
             return \%query;
 
         }
@@ -684,7 +684,7 @@ sub make_query {
             e => $params->{eng},
             s => $params->{sig},
         );
-        $query{ep4} = $params->{ep4} if $query{e} eq '4';
+        $query{ep4} = $params->{ep4} if $query{e} == 4;
         return \%query;
 
     }
@@ -936,7 +936,7 @@ sub check {
             foreach ( sort keys %{ $self->{s}->{engines} } ) {
 
                 my $engine_save = $_;
-                next if $_ eq 1;    # engine 1 done above
+                next if $_ == 1;    # engine 1 done above
                 my $sig = $objp->{"e$_"};
                 unless ($sig) {
                     $self->log( 5, "mail $objp->{id} e$_ got no sig" );
