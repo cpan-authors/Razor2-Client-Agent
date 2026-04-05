@@ -43,6 +43,7 @@ my %syslog_facilities = (
     local4   => 20,
     local5   => 21,
     local6   => 22,
+    local7   => 23,
 );
 
 sub new {

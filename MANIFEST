@@ -47,12 +47,14 @@ SECURITY.md
 SERVICE_POLICY
 t/basic.t
 t/config.t
+t/core.t
 t/errorhandler.t
 t/logger.t
 t/manager.t
 t/preproc.t
 t/signature.t
 t/string.t
+t/syslog.t
 t/testit/html.1
 t/testit/html.1.deHTMLxs
 t/testit/html.2

@@ -766,7 +766,7 @@ sub reportit {
     }
 
     if ( $self->{opt}->{authen_only} ) {
-        $self->authenticate($ident) or return;
+        $self->authenticate($ident) or return 2;
         $self->log( 5, "Done - authenticate only." );
         return 0 if $self->{authenticated};
         return 2;
