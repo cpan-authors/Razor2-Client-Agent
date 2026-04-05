@@ -533,7 +533,7 @@ sub compute_sigs {
             $self->log2file( 15, $objp->{body},    "$objp->{id}.before_preproc.as_reported" );
             $self->log2file( 15, $objp->{cleaned}, "$objp->{id}.after_preproc" );
 
-            if ( $clen eq 0 ) {
+            if ( $clen == 0 ) {
                 $self->log( 6, "preproc: mail $objp->{id} went from $olen bytes to 0, erasing" );
                 $objp->{skipme} = 1;
                 next;
@@ -548,7 +548,7 @@ sub compute_sigs {
                 $objp->{skipme} = 1;
                 next;
             }
-            elsif ( $clen eq $olen ) {
+            elsif ( $clen == $olen ) {
                 $self->log( 6, "preproc: mail $objp->{id} unchanged, bytes=$olen" );
             }
             else {
@@ -1012,9 +1012,7 @@ sub check_logic {
 
     # default is not spam
     $obj->{spam} = 0;
-    if ( $obj->{skipme} ) {
-        next;
-    }
+    return if $obj->{skipme};
 
     #
     # Logic for Spam

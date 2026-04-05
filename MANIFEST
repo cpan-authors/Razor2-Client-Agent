@@ -1,4 +1,5 @@
 _deHTMLxs.c
+_deHTMLxs.o
 bin/razor-admin
 bin/razor-check
 bin/razor-client
@@ -8,7 +9,10 @@ BUGS
 Changes
 CONTRIBUTING.md
 CREDITS
+deHTMLxs.bs
+deHTMLxs.c
 deHTMLxs.h
+deHTMLxs.o
 deHTMLxs.xs
 docs/razor-admin.pod
 docs/razor-agent.conf.pod
@@ -47,6 +51,7 @@ SECURITY.md
 SERVICE_POLICY
 t/basic.t
 t/config.t
+t/control_flow.t
 t/errorhandler.t
 t/logger.t
 t/manager.t
