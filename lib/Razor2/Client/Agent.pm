@@ -788,16 +788,16 @@ sub reportit {
             }
             print "$_\n";
         }
-        exit 0;
+        return 1;
     }
 
     if ( $self->{conf}->{simulate} ) {
         $self->log( 4, "Done. (simulate only)" );
-        exit 0;
+        return 1;
     }
     unless ( scalar @$objects ) {
         $self->log( 4, "Done.  No valid mail or signatures to check." );
-        exit 1;
+        return 1;
     }
 
     $self->{s}->{list} = $self->{s}->{nomination};
