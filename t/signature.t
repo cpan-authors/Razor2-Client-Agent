@@ -173,11 +173,87 @@ use_ok('Razor2::Signature::Whiplash');
 {
     my $wp = Razor2::Signature::Whiplash->new;
 
-    # www. autolinks are only detected when the text also contains http:// URLs
-    # (the autolink regex captures them, but extract_hosts returns early without
-    # http:// — this is existing behavior, not a bug we should fix here)
+    # www. autolinks alongside http URLs
     my @hosts = $wp->extract_hosts(" www.autolinked.com check http://other.example.com/page");
     ok( ( grep { /autolinked\.com/ } @hosts ), "extract_hosts detects www. autolinks alongside http URLs" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # www. autolinks WITHOUT any http:// URL in text
+    my @hosts = $wp->extract_hosts("Visit  www.standalone-autolink.com for more info");
+    ok( ( grep { /standalone-autolink\.com/ } @hosts ),
+        "extract_hosts returns www. autolinks even without http:// URLs" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # www. regex requires literal dot — "wwwX" should not match
+    my @hosts = $wp->extract_hosts(" wwwXfake.example.com has no real URL");
+    is( scalar @hosts, 0, "extract_hosts does not match wwwX (non-dot after www)" );
+}
+
+{
+    # whiplash() produces signatures for www-only autolink text
+    my $wp  = Razor2::Signature::Whiplash->new;
+    my $text = "Check out  www.spammer.example.com/offer for great deals!";
+    my ( $sigs, $meta ) = $wp->whiplash($text);
+
+    ok( defined $sigs && ref $sigs eq 'ARRAY', "whiplash returns sigs for www-only text" );
+    ok( @$sigs > 0, "at least one signature from www-only autolink" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # Multiple http URLs — should extract hosts from each (canonified)
+    my @hosts = $wp->extract_hosts(
+        "First http://alpha.example.com/a then http://beta.example.net/b"
+    );
+    ok( ( grep { $_ eq 'example.com' } @hosts ), "extract_hosts finds first URL host" );
+    ok( ( grep { $_ eq 'example.net' } @hosts ),  "extract_hosts finds second URL host" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # href-style URL extraction (canonified to example.com)
+    my @hosts = $wp->extract_hosts('<a href="http://href.example.com/page">click</a>');
+    ok( ( grep { $_ eq 'example.com' } @hosts ), "extract_hosts handles href URLs" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # HTML decimal entity encoded URL
+    my @hosts = $wp->extract_hosts(
+        'http://&#109;&#106;&#97;&#107;&#101;&#100;.biz/page'
+    );
+    ok( ( grep { /mjaked\.biz/ } @hosts ), "extract_hosts decodes HTML decimal entities" );
+}
+
+{
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    # HTTPS URL (canonified to example.com)
+    my @hosts = $wp->extract_hosts("Visit https://secure.example.com/login");
+    ok( ( grep { $_ eq 'example.com' } @hosts ), "extract_hosts handles https URLs" );
+}
+
+{
+    # canonify: country-code TLD with subdomain
+    my $wp = Razor2::Signature::Whiplash->new;
+
+    is( $wp->canonify("www.shop.com.br"), "shop.com.br",
+        "canonify handles .com.br correctly" );
+
+    is( $wp->canonify("deep.sub.domain.org"), "domain.org",
+        "canonify extracts domain.org from deep subdomain" );
+
+    is( $wp->canonify("host.unknown.tld"), "host.unknown.tld",
+        "canonify returns full host for unknown TLD" );
 }
 
 done_testing;

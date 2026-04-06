@@ -735,7 +735,7 @@ sub extract_hosts {
     debug("host_tokens(): will attempt to extract host names");
 
     my @hosts;
-    my @autolinks = $text =~ m|\s+(www.[^$$self{al_terminators}]+)|ig;    # Outlook with autolink these URLs
+    my @autolinks = $text =~ m|\s+(www\.[^$$self{al_terminators}]+)|ig;    # Outlook will autolink these URLs
     push @hosts, @autolinks;
 
     #
@@ -751,7 +751,7 @@ sub extract_hosts {
         $text = "http://$1";
     }
     else {
-        return;
+        return @hosts;
     }
 
     while ( my $host = next_host($text) ) {
