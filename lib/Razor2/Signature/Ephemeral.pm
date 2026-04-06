@@ -154,7 +154,7 @@ sub picksection {
 sub encode_separator {
 
     my ( $self, $separator ) = @_;
-    my $rv;
+    my $rv = '';
 
     unless ( ref $self ) { $separator = $self }
     my @chars = split /-/, $separator;

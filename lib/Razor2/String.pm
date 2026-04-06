@@ -8,8 +8,6 @@ use Razor2::Preproc::enBase64;
 
 use Digest::SHA qw(sha1_hex);
 
-#use MIME::Parser;
-
 use Exporter 'import';
 
 our @EXPORT = qw( hmac_sha1 xor_key
@@ -18,8 +16,7 @@ our @EXPORT = qw( hmac_sha1 xor_key
   makesis parsesis makesis_nue parsesis_nue
   hextobase64 base64tohex
   randstr round
-  hex_dump prep_mail
-  prehash printb64table
+  prep_mail
   hexbits2hash hmac2_sha1
   fisher_yates_shuffle
 );
@@ -38,12 +35,6 @@ BEGIN {
     foreach ( 52 .. 61 ) { $b64table{$_} = chr( $_ - 4 ); }
     $b64table{62} = "-";
     $b64table{63} = "_";
-}
-
-sub printb64table {
-    foreach ( 0 .. 63 ) {
-        print "$_ = $b64table{$_}\n";
-    }
 }
 
 sub hmac_sha1 {
@@ -68,20 +59,6 @@ sub hmac2_sha1 {
     my $digest = sha1_hex($iv2, $text);
     $digest = sha1_hex($iv1, $digest);
 
-    return ( hextobase64($digest), $digest );
-}
-
-sub hmac3_sha1 {
-    my $text = shift;
-    my $iv1  = shift;
-    my $iv2  = shift;
-
-    return unless $text && $iv1 && $iv2;
-    die "no ref's allowed" if ref($text);
-
-    my $digest = $text;
-    $digest = sha1_hex( $iv1 . $digest );
-    $digest = sha1_hex( $iv2 . $digest );
     return ( hextobase64($digest), $digest );
 }
 
@@ -541,72 +518,6 @@ sub randstr {
 
 }
 
-sub escape_smtp_terminator {
-
-    my ($textref) = @_;
-    $$textref =~ s/\r\n\./\r\n\.\./gm;
-
-}
-
-sub unescape_smtp_terminator {
-
-    my ($textref) = @_;
-    $$textref =~ s/\r\n\.\./\r\n\./gm;
-
-}
-
-sub hex_dump {
-    my $string = shift;
-
-    for ( split //, $string ) {
-        print ord($_) . " ";
-    }
-    print "\n";
-}
-
-sub hash2str {
-
-    my $href = shift;
-    my %hash = %$href;
-    my ( $str, $key );
-
-    for $key ( keys %hash ) {
-        my $tstr;
-        if ( ref $hash{$key} eq 'ARRAY' ) {
-            for ( @{ $hash{$key} } ) { $tstr .= escape($_) . "," }
-            $str =~ s/,$//;
-        }
-        elsif ( !( ref $hash{$key} ) ) {
-            $tstr .= escape( $hash{$key} );
-        }
-        if ($tstr) { $str .= "$key:$tstr&" }
-    }
-
-    $str =~ s/&$//;
-    return $str;
-
-}
-
-sub str2hash {
-
-    my $str = shift;
-    my %hash;
-    my @pairs = split /(?<!\\)&/, $str;
-
-    for (@pairs) {
-        my ( $key, $data ) = split /(?<!\\):/, $_, 2;
-        if ( $data =~ /(?<!\\),/ ) {
-            my @list = split /(?<!\\),/, $data;
-            for (@list) { $_ = unescape($_) }
-            $hash{$key} = [@list];
-        }
-        else { $hash{$key} = unescape($data) }
-    }
-
-    return \%hash;
-
-}
-
 #
 # If body of an email has mime attachments, the headers
 # will indicate this.  likewise, each mime attachment
@@ -971,23 +882,6 @@ sub prep_mail {
     return ( \$orig_hdr, @mimeparts_prep );
 }
 
-# from MIME::Parser
-#my $parser = new MIME::Parser;
-#my $entity = $parser->parse($body);
-# foreach (dump_entity($entity))
-sub dump_entity {
-    my $ent   = shift;
-    my @parts = $ent->parts;
-
-    if (@parts) {    # multipart...
-        map { dump_entity($_) } @parts;
-    }
-    else {           # single part...
-        return ( $ent->body );    # return text blob
-        print "    Part: ", $ent->bodyhandle->path, " (", scalar( $ent->head->mime_type ), ")\n";
-    }
-}
-
 # input:  hex string ("2D")
 # output: hash ref or array containg bits that are set
 #         2D == (1, 3, 4, 6)
@@ -1001,34 +895,6 @@ sub hexbits2hash {
     }
     return wantarray ? ( sort keys %h ) : \%h;
 
-}
-
-# input:  hash ref, array ref, or array containg bits that are set
-# output: hex string ("2D")
-#         2D == (4, 8, 32)
-
-sub hash2hexbits {
-    my @bits = @_;
-
-    @bits = @{ $bits[0] } if ref( $bits[0] ) eq 'ARRAY';
-    @bits = ( sort keys %{ $bits[0] } ) if ref( $bits[0] ) eq 'HASH';
-
-    my @all;
-    my $i = 1;
-    foreach ( sort { $a <=> $b } @bits ) {
-        while (1) {
-            push @all, 1 if $_ == $i;
-            last if $_ == $i;
-            push @all, 0;
-            $i++;
-        }
-    }
-    my $bs = join '', reverse @all;
-
-    # fixme needs testing
-    my $hex = ( unpack "H*", pack "B*", join '', reverse @all );
-
-    return $hex;
 }
 
 # for debugging - dumps a obj to a string
@@ -1077,32 +943,6 @@ sub debugobj {
         $line .= "\n";
     }
     return $line;
-}
-
-sub clean_body {
-
-    my ( $self, $bodyref ) = @_;
-
-    my $hasheaders = 1;
-
-    if ( $self->{preprocs}->{deBase64}->isit($bodyref) ) {
-        $self->{preprocs}->{deBase64}->doit($bodyref);
-        $hasheaders = 0;
-    }
-
-    if ( $self->{preprocs}->{deQP}->isit($bodyref) ) {
-        $self->{preprocs}->{deQP}->doit($bodyref);
-        $hasheaders = 0;
-    }
-
-    if ( $self->{preprocs}->{deHTML}->isit($bodyref) ) {
-        $self->{preprocs}->{deHTML}->doit($bodyref);
-    }
-
-    if ($hasheaders) {
-        $$bodyref =~ s/^.*?\n\n//s;
-    }
-
 }
 
 sub round {
