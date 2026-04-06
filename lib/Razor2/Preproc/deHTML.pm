@@ -88,8 +88,8 @@ sub html_xlat_old {
     # array produce additional 'undef's.  10 is an arbitrary #, but at
     # least greater than the max length (+ 1) of any html &tag.
 
-    my ($offset) = ( scalar @{$chars} - $i > 10 ? 10 : scalar @{$chars} );
-    my ($s) = join( '', @{$chars}[ $i .. $i + $offset ] );
+    my ($offset) = ( scalar @{$chars} - $i > 10 ? 10 : scalar @{$chars} - $i );
+    my ($s) = join( '', @{$chars}[ $i .. $i + $offset - 1 ] );
 
     while ( ( $tag, $val ) = each %{ $self->{html_tags} } ) {
 
@@ -110,15 +110,15 @@ sub html_xlat {
     #print "html_xlat($r_tag) start\n";
     return 0 if ( $$chars[$i] !~ /[a-zA-Z]/ );
 
-    my $r_tag;
+    my $r_tag = '';
 
     # we used to walk till we got a ';', but to be compatible
     # with c, we won't check for ';'
-    while ( $$chars[$i] && $$chars[$i] =~ /[a-zA-Z]/ ) {
+    while ( $i < scalar @$chars && $$chars[$i] =~ /[a-zA-Z]/ ) {
         $r_tag .= $$chars[ $i++ ];
     }
     my $len = length($r_tag);    # do not include ;
-    $len++ if ( $$chars[$i] eq ';' );
+    $len++ if ( $i < scalar @$chars && $$chars[$i] eq ';' );
 
     my $val = $self->{html_tags}->{$r_tag};
 
