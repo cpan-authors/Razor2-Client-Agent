@@ -45,6 +45,7 @@ MANIFEST			This list of files
 README.md
 SECURITY.md
 SERVICE_POLICY
+t/agent.t
 t/basic.t
 t/config.t
 t/errorhandler.t

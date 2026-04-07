@@ -20,3 +20,6 @@
 ^cpanfile$
 ^.perltidyrc$
 ^CLAUDE\.md$
+\.o$
+\.bs$
+^deHTMLxs\.c$
