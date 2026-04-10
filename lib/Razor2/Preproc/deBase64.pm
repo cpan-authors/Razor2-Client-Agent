@@ -17,6 +17,7 @@ sub doit {
     my ( $hdr, $body ) = split /\n\r*\n/, $$text, 2;
 
     $body = $self->extract_base64($text);
+    return unless defined $body;
 
     $body =~ tr|A-Za-z0-9+=/||cd;    # remove non-base64 chars
     $body =~ s/=+$//;                # remove padding

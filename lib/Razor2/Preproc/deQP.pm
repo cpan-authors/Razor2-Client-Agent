@@ -35,10 +35,11 @@ sub extract_qp {
 
     if ( $$text =~ /Content-Transfer-Encoding: quoted-printable(.*)$/sim ) {
         my $rhs = $1;
-        $rhs =~ /\r?\n\r?\n(.*)$/s;
-        return $1;
+        if ( $rhs =~ /\r?\n\r?\n(.*)$/s ) {
+            return $1;
+        }
     }
-    return undef;
+    return;
 }
 
 1;

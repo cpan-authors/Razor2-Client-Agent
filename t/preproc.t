@@ -36,6 +36,26 @@ use_ok('Razor2::Preproc::deBase64');
     like( $text, qr/^Content-Type: text\/plain/, "doit() preserves headers" );
 }
 
+{
+    my $dec = Razor2::Preproc::deBase64->new;
+
+    # extract_base64() returns undef when body separator is missing
+    my $no_body = "Content-Transfer-Encoding: base64";
+    is( $dec->extract_base64( \$no_body ), undef,
+        "extract_base64() returns undef when no body separator" );
+}
+
+{
+    my $dec = Razor2::Preproc::deBase64->new;
+
+    # doit() handles extract_base64 returning undef gracefully
+    my $text = "Content-Transfer-Encoding: base64";
+    my $orig = $text;
+    $dec->doit( \$text );
+
+    is( $text, $orig, "doit() leaves text unchanged when extract_base64 returns undef" );
+}
+
 # --- Razor2::Preproc::deQP ---
 
 use_ok('Razor2::Preproc::deQP');
@@ -62,6 +82,24 @@ use_ok('Razor2::Preproc::deQP');
     $dec->doit( \$text );
 
     like( $text, qr/Hello World/, "doit() decodes =20 to space" );
+}
+
+{
+    my $dec = Razor2::Preproc::deQP->new;
+
+    # extract_qp() returns undef when body separator is missing (stale $1 bug)
+    my $no_body = "Content-Transfer-Encoding: quoted-printable";
+    is( $dec->extract_qp( \$no_body ), undef,
+        "extract_qp() returns undef when no body separator" );
+}
+
+{
+    my $dec = Razor2::Preproc::deQP->new;
+
+    # extract_qp() returns body content correctly
+    my $msg = "Content-Transfer-Encoding: quoted-printable\n\nHello=20World";
+    is( $dec->extract_qp( \$msg ), "Hello=20World",
+        "extract_qp() extracts QP body content" );
 }
 
 {
