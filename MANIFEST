@@ -47,6 +47,7 @@ SECURITY.md
 SERVICE_POLICY
 t/basic.t
 t/config.t
+t/core_bugs.t
 t/errorhandler.t
 t/logger.t
 t/manager.t

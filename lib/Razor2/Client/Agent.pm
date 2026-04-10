@@ -851,7 +851,7 @@ sub parse_mbox {
     }
 
     foreach my $file (@ARGV) {
-        my $fh      = new IO::File;
+        my $fh      = IO::File->new;
         my @message = ();
         if ( ref $file ) {
             $fh = $file;

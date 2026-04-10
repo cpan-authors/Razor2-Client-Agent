@@ -467,7 +467,7 @@ sub prepare_parts {
 
         $obj->{p} = [];
         foreach ( 0 .. $#bodyparts ) {
-            $bodyparts[$_] =~ s/\r\n/\n/gs;
+            ${ $bodyparts[$_] } =~ s/\r\n/\n/gs;
             $obj->{p}->[$_] = {
                 id   => "$obj->{id}.$_",
                 body => $bodyparts[$_],
@@ -1033,7 +1033,7 @@ sub check_logic {
     elsif ( $logic_engines eq 'all' ) {
         $leng = $self->{s}->{engines};
     }
-    elsif ( $logic_engines =~ /^(\d\,)+$/ ) {
+    elsif ( $logic_engines =~ /^\d+(?:,\d+)*$/ ) {
         $leng = {};
         foreach ( split /,/, $logic_engines ) {
             unless ( $self->{s}->{engines}->{$_} ) {
@@ -1759,7 +1759,7 @@ sub connect {
         }
     }
 
-    my $select  = new IO::Select($sock);
+    my $select  = IO::Select->new($sock);
     my @handles = $select->can_read(15);
     if ( $handles[0] ) {
         $self->log( 8, "Connection established" );
