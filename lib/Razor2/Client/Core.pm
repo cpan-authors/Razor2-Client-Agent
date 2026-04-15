@@ -1318,7 +1318,8 @@ sub authenticate {
 
             my $id = $self->register($options);
             $self->{reregistered} = 1;
-            if (   ( $id->{user} eq $options->{user} )
+            if (   ref($id) eq 'HASH'
+                && ( $id->{user} eq $options->{user} )
                 && ( $id->{pass} eq $options->{pass} ) ) {
                 $self->log( 5, "re-registered user $id->{user} with $self->{s}->{ip}" );
                 return $self->authenticate($options);
@@ -1802,7 +1803,13 @@ sub disconnect {
     $self->_send( ["a=q\r\n"], 0, 1 );
     delete $self->{disconnecting};
 
-    delete $self->{sock};    # _send closes socket
+    if ( $self->{select} && $self->{sock} ) {
+        $self->{select}->remove( $self->{sock} );
+        close $self->{sock};
+    }
+    delete $self->{sock};
+    delete $self->{select};
+    delete $self->{connected_to};
 
     return 1;
 }
