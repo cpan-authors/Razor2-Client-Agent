@@ -30,7 +30,7 @@ new(class)
     CODE:
     {
 
-        Newz(0, RETVAL, 1, struct mystate);
+        Newxz(RETVAL, 1, struct mystate);
         RETVAL->is_xs = 1;  /* placeholder, not used now */
 
     }
@@ -60,17 +60,12 @@ isit(self, scalarref)
     SV *        scalarref;
     CODE:
     {
-        /* 2002/11/21 Anne Bennett: use the right type def: */
         STRLEN size;
         char * raw;
         SV *  text;
-        const char mynull = 0;
 
         if (SvROK(scalarref)) {
             text = SvRV(scalarref);
-
-            /* normally perl has '\0' on end, but not guaranteed */
-            sv_catpv(text,&mynull);
             raw = SvPV(text,size);
 
             /*  bool CM_PREPROC_is_html(const char *); */
@@ -93,44 +88,30 @@ doit(self, scalarref)
     CODE:
     {
         char * cleaned, * raw, * res;
-        /* 2002/11/21 Anne Bennett: use the right type def: */
         STRLEN size;
         SV *    text;
-        SV *    newtext;
-        SV *    newref;
 
         if (SvROK(scalarref)) {
             text = SvRV(scalarref);
             raw = SvPV(text,size);
 
-            *(raw + size - 1) = '\0';
-            if ( (cleaned = malloc(size+1)) &&
-                 (res = CM_PREPROC_html_strip(raw, cleaned))  /* html_strip will memset cleaned to 0 */
-                 ) {
-
-                /*
-                 * hook it up so scalarref will dereference to new scalar
-                 */
-
-                newtext = newSVpv (res, 0);
-
-                /* newtext is new scalar containing cleaned html.
-                 * we want scalarref to point to that instead of its old dude, text. */
-
-                /*  sv_setsv (SV* dest, SV* src) */
-                sv_setsv(text, newtext);
-
-                SvREFCNT_inc(scalarref);
-
-                RETVAL = scalarref;
-                free(cleaned);
-
-            } else {
-                if (cleaned) {
-                    free(cleaned);
-                }
-
+            if (size == 0) {
                 RETVAL = newSVpv ("", 0);
+            }
+            else {
+                Newx(cleaned, size+1, char);
+                if ( cleaned &&
+                     (res = CM_PREPROC_html_strip(raw, cleaned)) ) {
+
+                    sv_setpv(text, res);
+
+                    SvREFCNT_inc(scalarref);
+                    RETVAL = scalarref;
+                }
+                else {
+                    RETVAL = newSVpv ("", 0);
+                }
+                Safefree(cleaned);
             }
         } else {
                 RETVAL = newSVpv ("", 0);
