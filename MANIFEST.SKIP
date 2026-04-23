@@ -20,3 +20,8 @@
 ^cpanfile$
 ^.perltidyrc$
 ^CLAUDE\.md$
+
+# Build artifacts
+\.o$
+\.bs$
+^deHTMLxs\.c$
